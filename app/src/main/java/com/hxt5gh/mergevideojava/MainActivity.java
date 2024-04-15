@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                 dynamicPath.append(videoPath.size());
                 dynamicPath.append(":v=1:a=0[outv]\" ");
                 dynamicPath.append(" -map ");
-                dynamicPath.append(" \"[outv]\" ");
+                dynamicPath.append(" \"[outv]\" -y ");
                 String random =" /storage/emulated/0/Download/" +generateNonce();
                 String path = destLocation(generateNonce()+"");
                 dynamicPath.append(path);
@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private  void runFfmpeg(String command) {
+        binding.idLogs.setText("Processing...");
         Log.d("debug", "runFfmpeg: Command "+command);
         long executionId = FFmpeg.executeAsync(command, new ExecuteCallback() {
 
@@ -148,14 +149,14 @@ public class MainActivity extends AppCompatActivity {
             public void apply(final long executionId, final int returnCode) {
                 binding.idLogs.setText("Don't Exit The APP");
                 if (returnCode == RETURN_CODE_SUCCESS) {
-                    binding.idLogs.setText("");
+                    binding.idLogs.setText("Merged");
                     Log.i(Config.TAG, "Async command execution completed successfully.");
                     Toast.makeText(MainActivity.this, "Video Merge Successfully", Toast.LENGTH_SHORT).show();
                 } else if (returnCode == RETURN_CODE_CANCEL) {
-                    binding.idLogs.setText("");
+                    binding.idLogs.setText("Cancel");
                     Log.i(Config.TAG, "Async command execution cancelled by user.");
                 } else {
-                    binding.idLogs.setText("");
+                    binding.idLogs.setText("Execution Failed");
                     Log.i(Config.TAG, String.format("Async command execution failed with returnCode=%d.", returnCode));
                 }
             }
@@ -188,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String destLocation(String fileName)
     {
-        File file = new File(Environment.getExternalStorageDirectory() +"/Download");
+        File file = new File(Environment.getExternalStorageDirectory() +"/Trimmed");
         if (!file.exists()){
             file.mkdir();
         }

@@ -6,18 +6,24 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import com.arthenica.mobileffmpeg.BuildConfig;
 import com.arthenica.mobileffmpeg.Config;
 import com.arthenica.mobileffmpeg.ExecuteCallback;
 import com.arthenica.mobileffmpeg.FFmpeg;
@@ -40,16 +46,6 @@ public class MainActivity extends AppCompatActivity {
     private StringBuilder dynamicPath;
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-    private ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    showToast("Permission granted");
-                            openMediaForVideo();
-                } else {
-                    getPermissions();
-                }
-            });
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,13 +56,13 @@ public class MainActivity extends AppCompatActivity {
         dynamicPath = new StringBuilder();
         binding.textView.setText("Select Video");
 
-        // String pp = FileCreationUtils.createVideoFile(getApplicationContext());
-        //Log.d("debug", "Created Path " +pp);
 
         binding.idgetMedia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getPermissions();
+                    getPermissions();
+                    ActivityCompat.requestPermissions(MainActivity.this,new  String[] {Manifest.permission.READ_EXTERNAL_STORAGE} , 111);
+
             }
         });
 
@@ -78,10 +74,9 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Select Video", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 111);
-                }
-                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+
+                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q)
+                        ActivityCompat.requestPermissions(MainActivity.this,new  String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE} , 111);
 
                     for (String s : videoPath) {
                         dynamicPath.append(" -i ");
@@ -102,27 +97,53 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("path", "onClick: " + dynamicPath);
                     // String cmd = "-i /storage/emulated/0/Download/one.mp4 -i /storage/emulated/0/Download/two.mp4 -filter_complex \"[0:v][1:v]concat=n=2:v=1:a=0[outv]\" -map \"[outv]\" /storage/emulated/0/Download/outputNew.mp4";
                     runFfmpeg(dynamicPath.toString());
-                }
+
+
+
+
+
             }
         });
     }
 
     private void getPermissions() {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            openMediaForVideo();
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+              if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ){
+                  ActivityCompat.requestPermissions(this,new  String[] {Manifest.permission.READ_EXTERNAL_STORAGE} , 111);
+              }
+
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ) {
+            if (!Environment.isExternalStorageManager()){
+                try {
+                        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                        intent.addCategory("android.intent.category.DEFAULT");
+                        intent.setData(Uri.parse(String.format("package:%s",getApplicationContext().getPackageName())));
+                        startActivityIfNeeded(intent , 112);
+                }catch (Exception e){
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                    startActivityIfNeeded(intent , 112);
+                }
             }
 
-
-        } else if (ActivityCompat.shouldShowRequestPermissionRationale(
-                this, android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
-
-        } else {
-            requestPermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE);
-           // requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
+
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 111) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted
+                openMediaForVideo();
+            } else {
+               getPermissions();
+            }
+        }
+    }
 
     void showToast(String v) {
         Toast.makeText(this, v, Toast.LENGTH_SHORT).show();
@@ -181,20 +202,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //with No audio
-        //-i /storage/emulated/0/Android/data/com.hxt5gh.mergevideo/files/temp_1713012185101.mp4
-        // -i /storage/emulated/0/Android/data/com.hxt5gh.mergevideo/files/temp_1713012185185.mp4
-        // -filter_complex \"[0:v][1:v]concat=n=2:v=1:a=0[outv]\" -map \"[outv]\"
-        // /storage/emulated/0/Download/output.mp4
-
-        //with audio
-        //(listOf("-filter_complex", "[0:v][1:v]concat=n=2:v=1:a=0[outv]", "-map", "[outv]", "-map", "[outa]" , "output.mp4"
-
     }
 
 
     private String destLocation(String fileName)
     {
+
         File file = new File(Environment.getExternalStorageDirectory() +"/Trimmed");
         if (!file.exists()){
             file.mkdir();

@@ -61,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
         binding.idgetMedia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                    getPermissions();
+                videoPath.clear();
+                getPermissions();
 //                    ActivityCompat.requestPermissions(MainActivity.this,new  String[] {Manifest.permission.READ_EXTERNAL_STORAGE} , 111);
 
             }
@@ -70,37 +71,58 @@ public class MainActivity extends AppCompatActivity {
         binding.idMergeMedia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (videoPath.isEmpty() || videoPath.size() < 2)
-                {
+                if (videoPath.isEmpty() || videoPath.size() < 2) {
                     Toast.makeText(MainActivity.this, "Select Video", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q)
-                        ActivityCompat.requestPermissions(MainActivity.this,new  String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE} , 111);
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q)
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 111);
 
-                    for (String s : videoPath) {
-                        dynamicPath.append(" -i ");
-                        dynamicPath.append(s);
-                    }
-                    dynamicPath.append(" -filter_complex ");
-                    dynamicPath.append(" \"[0:v][1:v]concat=");
-                    dynamicPath.append("n=");
-                    dynamicPath.append(videoPath.size());
-                    dynamicPath.append(":v=1:a=0[outv]\" ");
-                    dynamicPath.append(" -map ");
-                    dynamicPath.append(" \"[outv]\" -y ");
-                    String random = " /storage/emulated/0/Download/" + generateNonce();
-                    String path = destLocation(generateNonce() + "");
-                    dynamicPath.append(path);
-
-
-                    Log.d("path", "onClick: " + dynamicPath);
-                    // String cmd = "-i /storage/emulated/0/Download/one.mp4 -i /storage/emulated/0/Download/two.mp4 -filter_complex \"[0:v][1:v]concat=n=2:v=1:a=0[outv]\" -map \"[outv]\" /storage/emulated/0/Download/outputNew.mp4";
-                    runFfmpeg(dynamicPath.toString());
+                /*
+                for (String s : videoPath) {
+                    dynamicPath.append(" -i ");
+                    dynamicPath.append(s);
+                }
+                dynamicPath.append(" -filter_complex ");
+                dynamicPath.append(" \"[0:v][1:v]concat=");
+                dynamicPath.append("n=");
+                dynamicPath.append(videoPath.size());
+                dynamicPath.append(":v=1:a=0[outv]\" ");
+                dynamicPath.append(" -map ");
+                dynamicPath.append(" \"[outv]\" -y ");
+                String random = " /storage/emulated/0/Download/" + generateNonce();
+                String path = destLocation(generateNonce() + "");
+                dynamicPath.append(path);
+                */
 
 
+                for (String s : videoPath) {
+                    dynamicPath.append(" -i ");
+                    dynamicPath.append(s);
+                }
+                dynamicPath.append(" -filter_complex ");
+                dynamicPath.append(" \"");
+                for (int i = 0; i < videoPath.size(); i++) {
+                    String stream = "[" + i + ":v]" + "[" + i + ":a]";
+                    dynamicPath.append(stream);
+                }
+                dynamicPath.append("concat=");
+                dynamicPath.append("n=");
+                dynamicPath.append(videoPath.size());
+                dynamicPath.append(":v=1:a=1");
+                dynamicPath.append("\" ");
+                dynamicPath.append(" -vsync vfr ");
+                dynamicPath.append(" -y ");
+                String path = destLocation(System.currentTimeMillis());
+                dynamicPath.append(path);
 
+
+
+
+                Log.d("path", "onClick: " + dynamicPath);
+
+                runFfmpeg(dynamicPath.toString());
 
 
             }
@@ -219,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private String destLocation(String fileName)
+    private String destLocation(Long fileName)
     {
 
         File file = new File(Environment.getExternalStorageDirectory() +"/Trimmed");

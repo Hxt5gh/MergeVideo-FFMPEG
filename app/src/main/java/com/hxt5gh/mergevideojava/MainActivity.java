@@ -1,5 +1,6 @@
 package com.hxt5gh.mergevideojava;
 
+import static android.Manifest.permission.READ_MEDIA_VIDEO;
 import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_CANCEL;
 import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS;
 import androidx.activity.result.ActivityResultCallback;
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                     getPermissions();
-                    ActivityCompat.requestPermissions(MainActivity.this,new  String[] {Manifest.permission.READ_EXTERNAL_STORAGE} , 111);
+//                    ActivityCompat.requestPermissions(MainActivity.this,new  String[] {Manifest.permission.READ_EXTERNAL_STORAGE} , 111);
 
             }
         });
@@ -108,11 +109,24 @@ public class MainActivity extends AppCompatActivity {
 
     private void getPermissions() {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-              if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ){
-                  ActivityCompat.requestPermissions(this,new  String[] {Manifest.permission.READ_EXTERNAL_STORAGE} , 111);
-              }
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+            if(ContextCompat.checkSelfPermission(MainActivity.this, READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED){
+                openMediaForVideo();
+                Log.d("TAGD", "Permission granted for higher version than 13");
+            }else{
+                ActivityCompat.requestPermissions(MainActivity.this,new String[]{
+                        READ_MEDIA_VIDEO
+                }, 111);
+            }
 
+        }else{
+            if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+                openMediaForVideo();
+                Log.d("TAGD", "Permission granted for lower version than 13");
+            }else{
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 111);
+
+            }
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ) {

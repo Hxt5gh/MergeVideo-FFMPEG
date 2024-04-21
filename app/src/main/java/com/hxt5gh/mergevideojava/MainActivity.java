@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
 
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q)
                     ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 111);
-
                 /*
                 for (String s : videoPath) {
                     dynamicPath.append(" -i ");
@@ -95,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
                 String path = destLocation(generateNonce() + "");
                 dynamicPath.append(path);
                 */
-
 
                 for (String s : videoPath) {
                     dynamicPath.append(" -i ");
@@ -118,13 +116,17 @@ public class MainActivity extends AppCompatActivity {
                 dynamicPath.append(path);
 
 
-
-
                 Log.d("path", "onClick: " + dynamicPath);
 
                 runFfmpeg(dynamicPath.toString());
+            }
+        });
 
-
+        binding.trimButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, TrimmingActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -241,7 +243,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
     private String destLocation(Long fileName)
+
     {
 
         File file = new File(Environment.getExternalStorageDirectory() +"/Trimmed");

@@ -61,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
         binding.idgetMedia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                    getPermissions();
+                videoPath.clear();
+                getPermissions();
 //                    ActivityCompat.requestPermissions(MainActivity.this,new  String[] {Manifest.permission.READ_EXTERNAL_STORAGE} , 111);
 
             }
@@ -70,14 +71,29 @@ public class MainActivity extends AppCompatActivity {
         binding.idMergeMedia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (videoPath.isEmpty() || videoPath.size() < 2)
-                {
+                if (videoPath.isEmpty() || videoPath.size() < 2) {
                     Toast.makeText(MainActivity.this, "Select Video", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q)
-                        ActivityCompat.requestPermissions(MainActivity.this,new  String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE} , 111);
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q)
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 111);
+                /*
+                for (String s : videoPath) {
+                    dynamicPath.append(" -i ");
+                    dynamicPath.append(s);
+                }
+                dynamicPath.append(" -filter_complex ");
+                dynamicPath.append(" \"[0:v][1:v]concat=");
+                dynamicPath.append("n=");
+                dynamicPath.append(videoPath.size());
+                dynamicPath.append(":v=1:a=0[outv]\" ");
+                dynamicPath.append(" -map ");
+                dynamicPath.append(" \"[outv]\" -y ");
+                String random = " /storage/emulated/0/Download/" + generateNonce();
+                String path = destLocation(generateNonce() + "");
+                dynamicPath.append(path);
+                */
 
                 for (String s : videoPath) {
                     dynamicPath.append(" -i ");
@@ -98,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
                 dynamicPath.append(" -y ");
                 String path = destLocation(System.currentTimeMillis());
                 dynamicPath.append(path);
+
 
                 Log.d("path", "onClick: " + dynamicPath);
 
@@ -226,7 +243,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private String destLocation(long fileName)
+
+    private String destLocation(Long fileName)
+
     {
 
         File file = new File(Environment.getExternalStorageDirectory() +"/Trimmed");

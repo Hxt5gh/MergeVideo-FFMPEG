@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.material.slider.RangeSlider;
-import com.gowtham.library.utils.TrimVideo;
 
 import java.io.IOException;
 
@@ -38,16 +37,47 @@ public class TrimmingActivity extends AppCompatActivity {
     private VideoView videoView;
     private Uri videoUri = Uri.parse("android.resource://com.hxt5gh.mergevideojava/raw/raw");
     private MediaController mediaController;
+
+    private static long startMillis;
+    private static long endMillis;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        binding =  ActivityTrimmingBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        init();
+        onClick();
+    }
 
-        setContentView(R.layout.activity_trimming);
 
-        //This is for getting the length of video that has to be trimmed.
-        String videoPath = "/path/to/your/video.mp4"; // Path to your video file
+    /*
+    //This using library of com.gowtham.library.utils.TrimVideo
+    public ActivityResultLauncher<Intent> startForResult = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK &&
+                        result.getData() != null) {
+                    Uri uri = Uri.parse(TrimVideo.getTrimmedVideoPath(result.getData()));
+                    Log.d("TAG", "Trimmed path:: " + uri);
+
+                } else {
+//                    LogMessage.v("videoTrimResultLauncher data is null");
+                }
+            });
+
+     */
+
+
+    void init()
+    {//setting up video
+
+        Uri videoUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.raw);
+        videoView = new VideoView(this);
+        mediaController = new MediaController(this);
+
+        /*
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(videoPath);
+        retriever.setDataSource(this ,videoUri);
 
         String durationStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
         long videoDuration = Long.parseLong(durationStr);
@@ -67,45 +97,17 @@ public class TrimmingActivity extends AppCompatActivity {
                 float endPercent = slider.getValues().get(1);
 
                 //we can use this timing for trimming the video by FFMPEG library.
-                long startMillis = (long) (startPercent * videoDuration);
-                long endMillis = (long) (endPercent * videoDuration);
-
-                // Use start and end values for trimming
+                startMillis = (long) (startPercent * videoDuration);
+                endMillis = (long) (endPercent * videoDuration);
+                Log.d("debug", "onValueChange: start -> "+startMillis  +" end -> " +endMillis);
             }
         });
-    }
-
-    //This using library of com.gowtham.library.utils.TrimVideo
-    public ActivityResultLauncher<Intent> startForResult = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK &&
-                        result.getData() != null) {
-                    Uri uri = Uri.parse(TrimVideo.getTrimmedVideoPath(result.getData()));
-                    Log.d("TAG", "Trimmed path:: " + uri);
-
-                } else {
-//                    LogMessage.v("videoTrimResultLauncher data is null");
-                }
-            });
+         */
 
 
-        binding =  ActivityTrimmingBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        init();
-        onClick();
-    }
-
-
-    void init()
-    {//setting up video
-        videoView = new VideoView(this);
-        mediaController = new MediaController(this);
-
-        Uri videoUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.raw);
         binding.videoView.setVideoURI(videoUri);
         binding.videoView.start();
+
 
     }
     void onClick()

@@ -6,4 +6,35 @@
     android:layout_height="match_parent"
     tools:context=".TrimmingActivity">
 
+    <VideoView
+        android:id="@+id/videoView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.slider.RangeSlider
+        android:background="@color/black"
+        android:id="@+id/rangeSlider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:valueFrom="0"
+        android:valueTo="100"
+        android:stepSize="1"
+        app:values="@array/initial_slider_values"
+        app:labelBehavior="withinBounds"
+        app:thumbRadius="12dp"
+        app:trackHeight="4dp"
+        app:thumbColor="@color/colorAccent"
+        app:trackColor="@color/white"
+        app:activeTrackColor="@color/colorPrimaryDark"
+        app:inactiveTrackColor="@color/colorPrimaryLight"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

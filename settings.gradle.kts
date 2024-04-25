@@ -10,7 +10,12 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+<<<<<<< HEAD
         maven ( "https://jitpack.io" )
+=======
+        maven (  "https://jitpack.io" )
+
+>>>>>>> trimming
     }
 }
 

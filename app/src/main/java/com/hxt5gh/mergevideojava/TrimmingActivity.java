@@ -75,36 +75,6 @@ public class TrimmingActivity extends AppCompatActivity {
         videoView = new VideoView(this);
         mediaController = new MediaController(this);
 
-        /*
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(this ,videoUri);
-
-        String durationStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-        long videoDuration = Long.parseLong(durationStr);
-
-        try {
-            retriever.release();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        //this is for getting the starting and ending time form the slider to trim the video.
-        RangeSlider rangeSlider = findViewById(R.id.rangeSlider);
-        rangeSlider.addOnChangeListener(new RangeSlider.OnChangeListener() {
-            @Override
-            public void onValueChange(RangeSlider slider, float value, boolean fromUser) {
-                float startPercent = slider.getValues().get(0);
-                float endPercent = slider.getValues().get(1);
-
-                //we can use this timing for trimming the video by FFMPEG library.
-                startMillis = (long) (startPercent * videoDuration);
-                endMillis = (long) (endPercent * videoDuration);
-                Log.d("debug", "onValueChange: start -> "+startMillis  +" end -> " +endMillis);
-            }
-        });
-         */
-
-
         binding.videoView.setVideoURI(videoUri);
         binding.videoView.start();
 

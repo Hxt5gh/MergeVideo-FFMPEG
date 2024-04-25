@@ -2,14 +2,14 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     tools:context=".TrimmingActivity">
 
     <VideoView
         android:id="@+id/videoView"
         android:layout_width="match_parent"
-        android:layout_height="649dp"
+        android:layout_height="match_parent"
         android:layout_marginBottom="1dp"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,7 +36,7 @@
         android:gravity="center_horizontal"
         android:orientation="horizontal"
         android:padding="16.dp"
-        app:layout_constraintBottom_toBottomOf="@+id/videoView"
+        app:layout_constraintBottom_toTopOf="@id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -59,22 +59,52 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
-        android:layout_width="0.dp"
+        android:layout_width="0dp"
         android:layout_height="85dp"
         android:background="@color/black"
-        android:padding="12.dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent">
 
-        <ImageView
-            android:id="@+id/trimId"
-            android:layout_width="28.dp"
-            android:layout_height="28.dp"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="12.dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/trim" />
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <com.innovattic.rangeseekbar.RangeSeekBar
+                android:id="@+id/rangeBarId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:rsb_maxThumbDrawable="@drawable/baseline_panorama_vertical_select_24"
+                app:rsb_maxThumbOffsetHorizontal="8dp"
+                app:rsb_max="1000000000"
+                app:rsb_minThumbDrawable="@drawable/baseline_panorama_vertical_select_24"
+                app:rsb_minThumbOffsetHorizontal="-8dp"
+                app:rsb_sidePadding="32dp"
+                app:rsb_touchRadius="10dp"
+                app:rsb_trackColor="#e0e1e5"
+                app:rsb_trackSelectedColor="#a8d5f5"
+                app:rsb_trackSelectedThickness="46dp"
+                app:rsb_trackThickness="46dp" />
+
+            <ImageView
+                android:id="@+id/trimId"
+                android:layout_width="32.dp"
+                android:layout_height="32.dp"
+                android:layout_marginLeft="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/trim" />
+
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
